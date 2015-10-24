@@ -4,8 +4,9 @@ using UnityEngine;
 [Serializable]
 public class TankManager
 {
-    public Color m_PlayerColor;            
-    public Transform m_SpawnPoint;         
+    public Color m_PlayerColor;
+    public Transform m_SpawnPoint;
+    public Material m_Material;
     [HideInInspector] public int m_PlayerNumber;             
     [HideInInspector] public string m_ColoredPlayerText;
     [HideInInspector] public GameObject m_Instance;          
@@ -28,12 +29,18 @@ public class TankManager
 
         m_ColoredPlayerText = "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">PLAYER " + m_PlayerNumber + "</color>";
 
-        MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer>();
+        m_Instance.transform.FindChild("ShipRenderer").FindChild("boat").GetComponent<MeshRenderer>().material = m_Material;
+        //MeshRenderer[] renderers = m_Instance.GetComponentsInChildren<MeshRenderer>();
 
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            renderers[i].material.color = m_PlayerColor;
-        }
+        //for (int i = 0; i < renderers.Length; i++)
+        //{
+        //    renderers[i].material.color = m_PlayerColor;
+        //}
+    }
+
+    public string GetColorString(string text)
+    {
+        return "<color=#" + ColorUtility.ToHtmlStringRGB(m_PlayerColor) + ">" + text + "</color>";
     }
 
 

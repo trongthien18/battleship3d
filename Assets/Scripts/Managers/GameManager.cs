@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    public int m_NumRoundsToWin = 5;        
+    public int m_NumRoundsToWin = 3;        
     public float m_StartDelay = 3f;         
     public float m_EndDelay = 3f;           
     public CameraControl m_CameraControl;   
-    public Text m_MessageText;              
-    public GameObject m_TankPrefab;         
-    public TankManager[] m_Tanks;           
+    public Text m_MessageText1;
+    public Text m_MessageText2;
+    public GameObject m_TankPrefab;
+    public TankManager[] m_Tanks;      
 
 
     private int m_RoundNumber;              
@@ -18,6 +20,24 @@ public class GameManager : MonoBehaviour
     private WaitForSeconds m_EndWait;       
     private TankManager m_RoundWinner;
     private TankManager m_GameWinner;
+
+    public List<string> winTexts = new List<string>()
+    {
+        "YEAH!",
+        "NICE SHOT!",
+        "GOD LIKE!!!",
+        "GENIOUS #_#",
+        "YOU AER THE BEST"
+    };
+
+    public List<string> loseTexts = new List<string>()
+    {
+        "TRY AGAIN",
+        "NEXT TIME...",
+        "DON'T GIVE UP",
+        "ONE MORE!!!",
+        "DO IT AGAIN ^@^"
+    };
 
     private void Start()
     {
@@ -81,7 +101,8 @@ public class GameManager : MonoBehaviour
         m_CameraControl.SetStartPositionAndSize();
 
         m_RoundNumber++;
-        m_MessageText.text = "ROUND " + m_RoundNumber;
+        m_MessageText1.text = "ROUND " + m_RoundNumber;
+        m_MessageText2.text = "ROUND " + m_RoundNumber;
 
         yield return m_StartWait;
     }
@@ -91,9 +112,10 @@ public class GameManager : MonoBehaviour
     {
         EnableTankControl();
 
-        m_MessageText.text = string.Empty;
+        m_MessageText1.text = string.Empty;
+        m_MessageText2.text = string.Empty;
 
-        while(!OneTankLeft())
+        while (!OneTankLeft())
         {
             yield return null;
         }
@@ -114,8 +136,12 @@ public class GameManager : MonoBehaviour
 
         m_GameWinner = GetGameWinner();
 
-        string message = EndMessage();
-        m_MessageText.text = message;
+        string message1 = EndMessage(1);
+        m_MessageText1.text = message1;
+
+        string message2 = EndMessage(2);
+        m_MessageText2.text = message2;
+
         yield return m_EndWait;
     }
 
@@ -158,22 +184,29 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private string EndMessage()
+    private string EndMessage(int playerID)
     {
         string message = "DRAW!";
 
         if (m_RoundWinner != null)
-            message = m_RoundWinner.m_ColoredPlayerText + " WINS THE ROUND!";
-
-        message += "\n\n\n\n";
-
-        for (int i = 0; i < m_Tanks.Length; i++)
         {
-            message += m_Tanks[i].m_ColoredPlayerText + ": " + m_Tanks[i].m_Wins + " WINS\n";
+            if (m_RoundWinner.m_PlayerNumber == playerID)
+                message = m_RoundWinner.GetColorString(winTexts[m_RoundNumber - 1]);
+            else
+                message = m_Tanks[playerID - 1].GetColorString(loseTexts[m_RoundNumber - 1]);
         }
 
         if (m_GameWinner != null)
-            message = m_GameWinner.m_ColoredPlayerText + " WINS THE GAME!";
+        {
+            if (m_GameWinner.m_PlayerNumber == playerID)
+            {
+                message = m_RoundWinner.GetColorString("LIKE A BOSS!");
+            }
+            else
+            {
+                message = m_Tanks[playerID - 1].GetColorString("LOSER...");
+            }
+        }
 
         return message;
     }

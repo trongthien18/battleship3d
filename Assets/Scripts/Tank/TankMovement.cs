@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using CnControls;
 
 public class TankMovement : MonoBehaviour
 {
@@ -29,7 +30,8 @@ public class TankMovement : MonoBehaviour
     {
         m_Rigidbody.isKinematic = false;
         m_MovementInputValue = 0f;
-        m_TurnInputValue = 0f;
+        
+        m_TurnInputValue = m_PlayerNumber == 2 ? -1 : 1;
     }
 
 
@@ -41,8 +43,8 @@ public class TankMovement : MonoBehaviour
 
     private void Start()
     {
-        m_MovementAxisName = "Vertical" + m_PlayerNumber;
-        m_TurnAxisName = "Horizontal" + m_PlayerNumber;
+        m_TurnAxisName = "Vertical" + m_PlayerNumber;
+        m_MovementAxisName = "Turn" + m_PlayerNumber;
 
         m_OriginalPitch = m_MovementAudio.pitch;
     }
@@ -51,9 +53,24 @@ public class TankMovement : MonoBehaviour
     private void Update()
     {
         // Store the player's input and make sure the audio for the engine is playing.
-        m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
-        m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
-
+        int temp = m_PlayerNumber == 2 ? -1 : 1;
+        if (CnInputManager.GetButtonDown(m_MovementAxisName))
+        {
+            m_MovementInputValue = 0.5f;
+            m_TurnInputValue = 0;            
+        }
+        else if (CnInputManager.GetButton(m_MovementAxisName))
+        {
+            m_MovementInputValue += Time.deltaTime;
+            if (m_MovementInputValue > 1)
+                m_MovementInputValue = 1;
+        }
+        else if (CnInputManager.GetButtonUp(m_MovementAxisName))
+        {
+            m_MovementInputValue = 0;
+            m_TurnInputValue = 1 * temp;
+        }
+        
         EngineAudio();
     }
 

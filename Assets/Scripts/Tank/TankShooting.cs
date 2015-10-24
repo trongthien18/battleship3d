@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using CnControls;
 
 public class TankShooting : MonoBehaviour
 {
@@ -48,7 +49,7 @@ public class TankShooting : MonoBehaviour
 
             Fire();
         }
-        else if (Input.GetButtonDown(m_FireButton) && !m_Fired)
+        else if (CnInputManager.GetButtonDown(m_FireButton) && !m_Fired)
         {
             m_Fired = false;
             m_CurrentLaunchForce = m_MinLaunchForce;
@@ -56,13 +57,13 @@ public class TankShooting : MonoBehaviour
             m_ShootingAudio.clip = m_ChargingClip;
             m_ShootingAudio.Play();
         }
-        else if (Input.GetButton(m_FireButton) && !m_Fired)
+        else if (CnInputManager.GetButton(m_FireButton) && !m_Fired)
         {
             m_CurrentLaunchForce += m_ChargeSpeed * Time.deltaTime;
 
             m_AimSlider.value = m_CurrentLaunchForce;
         }
-        else if (Input.GetButtonUp(m_FireButton) && !m_Fired)
+        else if (CnInputManager.GetButtonUp(m_FireButton) && !m_Fired)
         {
             Fire();
         }
